@@ -25,7 +25,7 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: '/',
-  outputDir: 'dist',
+  outputDir: '../dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
@@ -110,8 +110,7 @@ module.exports = {
                 libs: {
                   name: 'chunk-libs',
                   test: /[\\/]node_modules[\\/]/,
-                  priority: 10,
-                  chunks: 'initial' // only package third parties that are initially dependent
+                  priority: 10,                  chunks: 'initial' // only package third parties that are initially dependent
                 },
                 elementUI: {
                   name: 'chunk-elementUI', // split elementUI into a single package
