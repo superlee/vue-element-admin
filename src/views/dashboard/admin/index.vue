@@ -1,9 +1,30 @@
 <template>
   <div class="dashboard-editor-container">
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <TimelineChart :chart-data="mean_timelineChartData" />
+      <TimelineChart :chart-data="mean_timelineChartData" :panel-title="rawDataPanelTitle" />
     </el-row>
-
+    <el-row style="background:#fff" :gutter="32">
+      <el-col :xs="24" :sm="24" :lg="12">
+        <div class="chart-wrapper">
+          <TimelineChart :chart-data="kurt_timelineChartData" :panel-title="kurtPanelTitle" />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="12">
+        <div class="chart-wrapper">
+          <TimelineChart :chart-data="skewness_timelineChartData" :panel-title="skewnessPanelTitle" />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="12">
+        <div class="chart-wrapper">
+          <TimelineChart :chart-data="peak_timelineChartData" :panel-title="peakPanelTitle" />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="12">
+        <div class="chart-wrapper">
+          <TimelineChart :chart-data="intensity_timelineChartData" :panel-title="intensityPanelTitle" />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -39,7 +60,16 @@ export default {
       lineChartData: lineChartData.newVisitis,
       raw_timelineChartData: [],
       mean_timelineChartData: [],
-      now: +new Date()
+      kurt_timelineChartData: [],
+      peak_timelineChartData: [],
+      skewness_timelineChartData: [],
+      intensity_timelineChartData: [],
+      now: +new Date(),
+      rawDataPanelTitle: '原始数据',
+      kurtPanelTitle: '峭度',
+      skewnessPanelTitle: '偏斜度',
+      peakPanelTitle: '峰值指标',
+      intensityPanelTitle: '振动烈度'
     }
   },
   mounted: function() {
@@ -56,6 +86,11 @@ export default {
         var mean_value = total / ad_data.length
 
         this.mean_timelineChartData.push([this.now, mean_value])
+        this.kurt_timelineChartData.push([this.now, ioip_data.kurt_value])
+        this.peak_timelineChartData.push([this.now, ioip_data.peak_value])
+        this.skewness_timelineChartData.push([this.now, ioip_data.skewness_value])
+        this.intensity_timelineChartData.push([this.now, ioip_data.intensity_value])
+
         if (ad_data.length > 0) {
           this.now = this.raw_timelineChartData[this.raw_timelineChartData.length - 1][0] + 1000
         }
@@ -76,16 +111,5 @@ export default {
   background-color: rgb(240, 242, 245);
   position: relative;
 
-  .chart-wrapper {
-    background: #fff;
-    padding: 16px 16px 0;
-    margin-bottom: 32px;
-  }
-}
-
-@media (max-width:1024px) {
-  .chart-wrapper {
-    padding: 8px;
-  }
 }
 </style>

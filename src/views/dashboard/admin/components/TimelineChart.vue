@@ -4,7 +4,7 @@
 
 <script>
 import echarts from 'echarts'
-require('echarts/theme/dark') // echarts theme
+require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
 
 export default {
@@ -20,7 +20,7 @@ export default {
     },
     height: {
       type: String,
-      default: '350px'
+      default: '25vh'
     },
     autoResize: {
       type: Boolean,
@@ -29,6 +29,10 @@ export default {
     chartData: {
       type: Array,
       required: true
+    },
+    panelTitle: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -62,8 +66,11 @@ export default {
       this.setOptions(this.chartData)
     },
     setOptions(timelineData) {
-      console.log(timelineData)
       this.chart.setOption({
+        title: {
+          text: this.panelTitle,
+          left: 'center'
+        },
         xAxis: {
           type: 'time',
           min: +new Date() - 60000,
