@@ -1,34 +1,14 @@
 <template>
   <div class="dashboard-editor-container">
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
+      <TimelineChart :chart-data="mean_timelineChartData" />
     </el-row>
 
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
-        </div>
-      </el-col>
-    </el-row>
   </div>
 </template>
 
 <script>
-import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
-import PieChart from './components/PieChart'
-import BarChart from './components/BarChart'
+import TimelineChart from './components/TimelineChart'
 
 const lineChartData = {
   newVisitis: {
@@ -52,15 +32,35 @@ const lineChartData = {
 export default {
   name: 'DashboardAdmin',
   components: {
-    LineChart,
-    RaddarChart,
-    PieChart,
-    BarChart
+    TimelineChart
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      lineChartData: lineChartData.newVisitis,
+      raw_timelineChartData: [],
+      mean_timelineChartData: [],
+      now: +new Date()
     }
+  },
+  mounted: function() {
+    setInterval(() => {
+      window.eel.get_ioip_data(this.now - 1000, this.now)((ioip_data) => {
+        console.log(ioip_data)
+        var ad_data = ioip_data.ad_data
+        var total = 0
+        for (var i = 0; i < ad_data.length; i++) {
+          total = total + ad_data[i][1]
+          this.raw_timelineChartData.push(ad_data[i])
+        }
+
+        var mean_value = total / ad_data.length
+
+        this.mean_timelineChartData.push([this.now, mean_value])
+        if (ad_data.length > 0) {
+          this.now = this.raw_timelineChartData[this.raw_timelineChartData.length - 1][0] + 1000
+        }
+      })
+    }, 1000)
   },
   methods: {
     handleSetLineChartData(type) {
