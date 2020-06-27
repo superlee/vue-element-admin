@@ -41,7 +41,7 @@ export default {
     dragTable: 'Arrastrar tabla',
     inlineEditTable: 'Editor',
     complexTable: 'Complex Table',
-    tab: 'Pestaña',
+    tab: 'Gerente de dispositivos',
     form: 'Formulario',
     createArticle: 'Crear artículo',
     editArticle: 'Editar artículo',

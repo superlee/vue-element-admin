@@ -1,6 +1,7 @@
 export default {
   route: {
     dashboard: '首页',
+    tab: '节点管理',
     documentation: '文档',
     guide: '引导页',
     permission: '权限测试页',
@@ -41,7 +42,6 @@ export default {
     dragTable: '拖拽 Table',
     inlineEditTable: 'Table 内编辑',
     complexTable: '综合 Table',
-    tab: 'Tab',
     form: '表单',
     createArticle: '创建文章',
     editArticle: '编辑文章',

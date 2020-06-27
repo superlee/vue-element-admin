@@ -41,7 +41,7 @@ export default {
     dragTable: 'Drag Table',
     inlineEditTable: 'Inline Edit',
     complexTable: 'Complex Table',
-    tab: 'Tab',
+    tab: 'Devices Manager',
     form: 'Form',
     createArticle: 'Create Article',
     editArticle: 'Edit Article',
