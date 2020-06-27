@@ -1,6 +1,7 @@
 export default {
   route: {
     dashboard: 'Dashboard',
+    devices: 'Devices Manager',
     documentation: 'Documentation',
     guide: 'Guide',
     permission: 'Permission',

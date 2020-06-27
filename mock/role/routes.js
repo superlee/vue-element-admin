@@ -46,6 +46,30 @@ const constantRoutes = [
     ]
   },
 
+  {
+    path: '/example',
+    component: 'layout/Layout',
+    redirect: '/example/list',
+    name: 'Example',
+    meta: {
+      title: 'example',
+      icon: 'el-icon-s-help'
+    },
+    children: [
+      {
+        path: 'create',
+        component: () => import('@/views/example/create'),
+        name: 'CreateArticle',
+        meta: { title: 'createArticle', icon: 'edit' }
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/example/list'),
+        name: 'ArticleList',
+        meta: { title: 'articleList', icon: 'list' }
+      }
+    ]
+  },
 ]
 
 const asyncRoutes = [

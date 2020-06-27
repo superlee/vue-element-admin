@@ -1,6 +1,7 @@
 export default {
   route: {
     dashboard: '首页',
+    devices: '节点管理',
     tab: '节点管理',
     documentation: '文档',
     guide: '引导页',

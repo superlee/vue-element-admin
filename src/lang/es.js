@@ -42,6 +42,7 @@ export default {
     inlineEditTable: 'Editor',
     complexTable: 'Complex Table',
     tab: 'Gerente de dispositivos',
+    devices: 'Gerente de dispositivos',
     form: 'Formulario',
     createArticle: 'Crear artículo',
     editArticle: 'Editar artículo',
