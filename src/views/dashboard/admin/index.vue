@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-editor-container">
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <TimelineChart :chart-data="mean_timelineChartData" :panel-title="rawDataPanelTitle" />
+      <TimelineChart :chart-data="raw_timelineChartData" :panel-title="rawDataPanelTitle" />
     </el-row>
     <el-row style="background:#fff" :gutter="32">
       <el-col :xs="24" :sm="24" :lg="12">
@@ -64,7 +64,7 @@ export default {
       peak_timelineChartData: [],
       skewness_timelineChartData: [],
       intensity_timelineChartData: [],
-      now: +new Date(),
+      now: +new Date() - 1000,
       rawDataPanelTitle: '原始数据',
       kurtPanelTitle: '峭度',
       skewnessPanelTitle: '偏斜度',
@@ -74,25 +74,24 @@ export default {
   },
   mounted: function() {
     setInterval(() => {
+      this.now = this.now + 1000
       window.eel.get_ioip_data(this.now - 1000, this.now)((ioip_data) => {
-        console.log(ioip_data)
         var ad_data = ioip_data.ad_data
         var total = 0
         for (var i = 0; i < ad_data.length; i++) {
           total = total + ad_data[i][1]
           this.raw_timelineChartData.push(ad_data[i])
+          if (this.raw_timelineChartData.length >= 6000) {
+            // 100 per second, 60 second
+            this.raw_timelineChartData.shift()
+          }
         }
 
-        var mean_value = total / ad_data.length
-
-        this.mean_timelineChartData.push([this.now, mean_value])
-        this.kurt_timelineChartData.push([this.now, ioip_data.kurt_value])
-        this.peak_timelineChartData.push([this.now, ioip_data.peak_value])
-        this.skewness_timelineChartData.push([this.now, ioip_data.skewness_value])
-        this.intensity_timelineChartData.push([this.now, ioip_data.intensity_value])
-
-        if (ad_data.length > 0) {
-          this.now = this.raw_timelineChartData[this.raw_timelineChartData.length - 1][0] + 1000
+        for (i = 0; i < ioip_data.kurt_value.length; i++) {
+          this.kurt_timelineChartData.push(ioip_data.kurt_value[i])
+          this.peak_timelineChartData.push(ioip_data.peak_value[i])
+          this.skewness_timelineChartData.push(ioip_data.skewness_value[i])
+          this.intensity_timelineChartData.push(ioip_data.intensity_value[i])
         }
       })
     }, 1000)
