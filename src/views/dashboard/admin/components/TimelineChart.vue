@@ -33,6 +33,10 @@ export default {
     panelTitle: {
       type: String,
       default: ''
+    },
+    now: {
+      type: Number,
+      default: function() { return +new Date() }
     }
   },
   data() {
@@ -73,8 +77,8 @@ export default {
         },
         xAxis: {
           type: 'time',
-          min: +new Date() - 60000,
-          max: +new Date() + 1000,
+          min: this.now - 60000,
+          max: this.now + 1000,
           boundaryGap: false,
           axisTick: {
             show: false

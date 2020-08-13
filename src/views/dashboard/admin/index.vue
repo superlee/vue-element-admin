@@ -1,27 +1,32 @@
 <template>
   <div class="dashboard-editor-container">
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <TimelineChart :chart-data="mean_timelineChartData" :panel-title="rawDataPanelTitle" />
+    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:5px;">
+      <TimelineChart :chart-data="mean_timelineChartData" :panel-title="rawDataPanelTitle" :now="now" />
     </el-row>
+
+    <el-row style="background:#fff;padding:0px 0px 0;margin-bottom:5px;">
+      <LineChart :chart-data="fft_lineChartData" :panel-title="fftPanelTitle" />
+    </el-row>
+
     <el-row style="background:#fff" :gutter="32">
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <TimelineChart :chart-data="kurt_timelineChartData" :panel-title="kurtPanelTitle" />
+          <TimelineChart :chart-data="kurt_timelineChartData" :panel-title="kurtPanelTitle" :now="now" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <TimelineChart :chart-data="skewness_timelineChartData" :panel-title="skewnessPanelTitle" />
+          <TimelineChart :chart-data="skewness_timelineChartData" :panel-title="skewnessPanelTitle" :now="now" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <TimelineChart :chart-data="peak_timelineChartData" :panel-title="peakPanelTitle" />
+          <TimelineChart :chart-data="peak_timelineChartData" :panel-title="peakPanelTitle" :now="now" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <TimelineChart :chart-data="intensity_timelineChartData" :panel-title="intensityPanelTitle" />
+          <TimelineChart :chart-data="intensity_timelineChartData" :panel-title="intensityPanelTitle" :now="now" />
         </div>
       </el-col>
     </el-row>
@@ -30,76 +35,71 @@
 
 <script>
 import TimelineChart from './components/TimelineChart'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import LineChart from './components/LineChart'
 
 export default {
   name: 'DashboardAdmin',
   components: {
-    TimelineChart
+    TimelineChart,
+    LineChart
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis,
       raw_timelineChartData: [],
       mean_timelineChartData: [],
       kurt_timelineChartData: [],
       peak_timelineChartData: [],
       skewness_timelineChartData: [],
       intensity_timelineChartData: [],
+      fft_lineChartData: [],
       now: +new Date(),
       rawDataPanelTitle: '原始数据',
       kurtPanelTitle: '峭度',
       skewnessPanelTitle: '偏斜度',
       peakPanelTitle: '峰值指标',
-      intensityPanelTitle: '振动烈度'
+      intensityPanelTitle: '振动烈度',
+      fftPanelTitle: '频谱数据'
     }
   },
   mounted: function() {
     setInterval(() => {
       window.eel.get_ioip_data(this.now - 1000, this.now)((ioip_data) => {
-        console.log(ioip_data)
         var ad_data = ioip_data.ad_data
+
         var total = 0
         for (var i = 0; i < ad_data.length; i++) {
           total = total + ad_data[i][1]
-          this.raw_timelineChartData.push(ad_data[i])
         }
-
         var mean_value = total / ad_data.length
 
         this.mean_timelineChartData.push([this.now, mean_value])
-        this.kurt_timelineChartData.push([this.now, ioip_data.kurt_value])
-        this.peak_timelineChartData.push([this.now, ioip_data.peak_value])
-        this.skewness_timelineChartData.push([this.now, ioip_data.skewness_value])
-        this.intensity_timelineChartData.push([this.now, ioip_data.intensity_value])
+        this.kurt_timelineChartData.push([this.now, ioip_data.kurt_value[0][1]])
+        this.peak_timelineChartData.push([this.now, ioip_data.peak_value[0][1]])
+        this.skewness_timelineChartData.push([this.now, ioip_data.skewness_value[0][1]])
+        this.intensity_timelineChartData.push([this.now, ioip_data.intensity_value[0][1]])
+
+        for (i = 0; i < ioip_data.fft_value.length; i++) {
+          this.fft_lineChartData.push(ioip_data.fft_value[i])
+        }
+        this.keepLastElements(this.fft_lineChartData, ioip_data.fft_value.length)
+        console.log(this.fft_lineChartData)
+
+        var n = 1000
+        this.keepLastElements(this.mean_timelineChartData, n)
+        this.keepLastElements(this.kurt_timelineChartData, n)
+        this.keepLastElements(this.peak_timelineChartData, n)
+        this.keepLastElements(this.skewness_timelineChartData, n)
+        this.keepLastElements(this.intensity_timelineChartData, n)
 
         if (ad_data.length > 0) {
-          this.now = this.raw_timelineChartData[this.raw_timelineChartData.length - 1][0] + 1000
+          this.now = ad_data[ad_data.length - 1][0] + 1000
         }
       })
     }, 1000)
   },
   methods: {
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+    keepLastElements(arr, n) {
+      arr.splice(0, arr.length - n)
     }
   }
 }
@@ -110,6 +110,5 @@ export default {
   padding: 32px;
   background-color: rgb(240, 242, 245);
   position: relative;
-
 }
 </style>
