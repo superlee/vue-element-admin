@@ -114,14 +114,14 @@ export const constantRoutes = [
 export const asyncRoutes = [
 
   {
-    path: '/tab',
+    path: '/table',
     component: Layout,
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/tab/index'),
-        name: 'Tab',
-        meta: { title: 'tab', icon: 'tab' }
+        path: 'nodes-management',
+        component: () => import('@/views/nodes-management/inline-edit-table'),
+        name: 'InlineEditTable',
+        meta: { title: 'nodes', icon: 'tab' }
       }
     ]
   },
