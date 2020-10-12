@@ -96,15 +96,16 @@ export default {
       this.listLoading = true
       // const { data } = await fetchList(this.listQuery)
       // const items = data.items
-      const items = [
+      const sensors = window.eel.get_sensors()
+      /* const items = [
         {
           'id': 1,
           'ip': '192.168.12.114',
           'port': '2001',
           'edit': false
         }
-      ]
-      this.list = items.map(v => {
+      ] */
+      this.list = sensors.map(v => {
         this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
         v.originalIp = v.ip //  will be used when user click the cancel botton
         v.originalPort = v.port //  will be used when user click the cancel botton
