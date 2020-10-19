@@ -78,13 +78,21 @@ export default {
       window.eel.get_ioip_data(this.now - 1000, this.now)((ioip_data) => {
         var ad_data = ioip_data.ad_data
         var total = 0
+
+        this.raw_timelineChartData = this.raw_timelineChartData.concat(ad_data)
+
+        console.log('this.raw_timelineChartData length is ' + this.raw_timelineChartData.length)
+        console.log('this.now is ' + new Date(this.now))
+
+        const maxLen = 60
+
+        if (this.raw_timelineChartData.length >= maxLen) {
+          // 100 per second, 60 second
+          this.raw_timelineChartData.splice(0, this.raw_timelineChartData.length - maxLen)
+        }
+
         for (var i = 0; i < ad_data.length; i++) {
           total = total + ad_data[i][1]
-          this.raw_timelineChartData.push(ad_data[i])
-          if (this.raw_timelineChartData.length >= 6000) {
-            // 100 per second, 60 second
-            this.raw_timelineChartData.shift()
-          }
         }
 
         for (i = 0; i < ioip_data.kurt_value.length; i++) {
