@@ -103,7 +103,9 @@ export default {
           smooth: false,
           type: 'line',
           data: timelineData
-        }]
+        }],
+        animation: false,
+        sampling: 'average'
       })
     }
   }

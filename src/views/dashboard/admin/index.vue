@@ -75,38 +75,42 @@ export default {
   mounted: function() {
     setInterval(() => {
       this.now = this.now + 1000
-      window.eel.get_ioip_data(this.now - 1000, this.now)((ioip_data) => {
-        var ad_data = ioip_data.ad_data
-        var total = 0
+      var sample_data_per_second = 20
+      var max_time_range = 60 // Seconds
+      window.eel.get_ioip_data(this.now - 1000, this.now, sample_data_per_second)((ioip_data) => {
+        this.raw_timelineChartData = this.raw_timelineChartData.concat(ioip_data.ad_data)
+        this.limit_max_len(
+          'raw_timelineChartData',
+          max_time_range * sample_data_per_second
+        )
 
-        this.raw_timelineChartData = this.raw_timelineChartData.concat(ad_data)
-
-        console.log('this.raw_timelineChartData length is ' + this.raw_timelineChartData.length)
-        console.log('this.now is ' + new Date(this.now))
-
-        const maxLen = 60
-
-        if (this.raw_timelineChartData.length >= maxLen) {
-          // 100 per second, 60 second
-          this.raw_timelineChartData.splice(0, this.raw_timelineChartData.length - maxLen)
-        }
-
-        for (var i = 0; i < ad_data.length; i++) {
-          total = total + ad_data[i][1]
-        }
-
-        for (i = 0; i < ioip_data.kurt_value.length; i++) {
+        for (var i = 0; i < ioip_data.kurt_value.length; i++) {
           this.kurt_timelineChartData.push(ioip_data.kurt_value[i])
           this.peak_timelineChartData.push(ioip_data.peak_value[i])
           this.skewness_timelineChartData.push(ioip_data.skewness_value[i])
           this.intensity_timelineChartData.push(ioip_data.intensity_value[i])
         }
+
+        this.limit_max_len('kurt_timelineChartData', max_time_range)
+        this.limit_max_len('peak_timelineChartData', max_time_range)
+        this.limit_max_len('skewness_timelineChartData', max_time_range)
+        this.limit_max_len('intensity_timelineChartData', max_time_range)
       })
     }, 1000)
   },
   methods: {
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
+    },
+    limit_max_len(arrayDataStr, maxLen) {
+      var arrayData = this[arrayDataStr]
+
+      if (arrayData.length >= maxLen) {
+        // 10 per second, 60 second
+        arrayData.splice(0, arrayData.length - maxLen)
+      }
+
+      return arrayData
     }
   }
 }
