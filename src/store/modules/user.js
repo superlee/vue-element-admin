@@ -33,14 +33,27 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+      if (process.env.NODE_ENV === 'production') {
+        window.eel.login(username.trim(), password)(resp => {
+          const { code, data } = resp
+          if (code === 200) {
+            commit('SET_TOKEN', data.token)
+            setToken(data.token)
+            resolve()
+          } else {
+            reject('wrong username or password')
+          }
+        })
+      } else {
+        login({ username: username.trim(), password: password }).then(response => {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          setToken(data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      }
     })
   },
 
